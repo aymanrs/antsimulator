@@ -42,7 +42,7 @@ int main(){
     font.loadFromFile("res/Ubuntu-Regular.ttf");
     sf::Text score;
     score.setFont(font);
-    score.setColor(sf::Color::White);
+    score.setFillColor(sf::Color::White);
     while(app.isOpen()){
         while(app.pollEvent(e)){
             if(e.type == sf::Event::Closed){
