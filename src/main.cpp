@@ -1,13 +1,10 @@
 #include <SFML/Graphics.hpp>
+#include "globals.hpp"
 #include "space.hpp"
 #include "ant.hpp"
 #include <iostream>
 
-#define H 300
-#define W 300
-#define S 2
-
-Grid space(W, H, {143, 234});
+Grid space(W, H, home);
 
 sf::Color pixelColor(Pixel s){
     switch(s.state){
@@ -15,7 +12,7 @@ sf::Color pixelColor(Pixel s){
         return sf::Color::Black;
         break;
     case PixelState::PHER:
-        return sf::Color((s.redIntensity / 1100) * 255, 0, (s.blueIntensity / 1100) * 255);
+        return sf::Color((s.redIntensity / maxSteps) * 255, 0, (s.blueIntensity / maxSteps) * 255);
     case PixelState::FOOD:
         return sf::Color::Green;
         break;
@@ -30,39 +27,53 @@ sf::Color pixelColor(Pixel s){
 }
 int main(){
     sf::RenderWindow app;
-    app.create(sf::VideoMode(W * S, H * S), "ant simulation");
-    Ant ants[800];
+    app.create(sf::VideoMode(W * S, H * S), "ant simulation", sf::Style::Titlebar | sf::Style::Close);
+    Ant ants[numAnts];
     sf::Event e;
-    for(int i = 220;i < 289;i++){
-        for(int j = 128;j < 169;j++){
-            space.set({i, j}, {PixelState::FOOD, 0, 0});
-        }
-    }
     sf::Font font;
     font.loadFromFile("res/Ubuntu-Regular.ttf");
     sf::Text score;
     score.setFont(font);
     score.setFillColor(sf::Color::White);
+    bool simulationON = false;
+    PixelState s = WALL;
     while(app.isOpen()){
         while(app.pollEvent(e)){
             if(e.type == sf::Event::Closed){
                 app.close();
-            } else if(e.type == sf::Event::MouseButtonPressed){
+            } else if(e.type == sf::Event::MouseButtonPressed && e.mouseButton.button == sf::Mouse::Left){
                 Coords c = {e.mouseButton.x/S, e.mouseButton.y/S};
                 for(int x = c.x - 2;x <= c.x+2;x++){
                     for(int y = c.y - 2;y <= c.y+2;y++){
-                        if(space.contains({x, y}) && space.get({x, y}).state != HOME) {
-                            space.set({x, y}, {WALL, 0, 0});
+                        if(space.inside({x, y}) && space.get({x, y}).state != HOME) {
+                            space.set({x, y}, {s, 0, 0});
                         }
                     }
                 }
-                space.set({e.mouseButton.x/S, e.mouseButton.y/S}, {WALL, 0, 0});
+            } else if(e.type == sf::Event::KeyPressed){
+                switch(e.key.code){
+                case sf::Keyboard::Space:
+                    simulationON = !simulationON;
+                    break;
+                case sf::Keyboard::Num1:
+                    s = NONE;
+                    break;
+                case sf::Keyboard::Num2:
+                    s = WALL;
+                    break;
+                case sf::Keyboard::Num3:
+                    s = FOOD;
+                    break;
+                default:
+                    break;
+                }
             }
         }
         app.clear();
-        for(Ant& a : ants){
-            a.move();
-            //std::cout << a.getCoords().x << std::endl;
+        if(simulationON){
+            for(Ant& a : ants){
+                a.move();
+            }
         }
         sf::RectangleShape re;
         for(int i = 0;i < W;i++){
@@ -73,8 +84,8 @@ int main(){
                 app.draw(re);
                 Pixel p = space.get({i, j});
                 if(p.state == PixelState::PHER){
-                    space.set({i, j}, {PixelState::PHER, std::max(0., p.redIntensity-0.6), std::max(0., p.blueIntensity-0.6)});
-                    if(p.redIntensity-0.6 <= 0 && p.blueIntensity-0.6 <= 0) space.set({i, j}, Pixel());
+                    space.set({i, j}, {PixelState::PHER, std::max(0., p.redIntensity-evaporation), std::max(0., p.blueIntensity-evaporation)});
+                    if(p.redIntensity-evaporation <= 0 && p.blueIntensity-evaporation <= 0) space.set({i, j}, Pixel());
                 }
             }
         }

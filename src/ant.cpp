@@ -3,7 +3,6 @@
 #include "space.hpp"
 #include <random>
 #include <ctime>
-#include <iostream>
 
 std::mt19937 Ant::rng(time(0));
 
@@ -116,15 +115,12 @@ void Ant::move()
             }
         break;
     }
-    //std::cout << weights[0] << ' ' << weights[1] << ' ' << weights[2] << ' ' << weights[3] << std::endl;
     _dir = newDir;
     if(space.get(_co).state == NONE) space.set(_co, {PHER, 0, 0});
     if(!_hasFood && space.get(_co).state == PHER){
-        //_steps = std::min(_steps * 1., 700-space.get(_co).redIntensity);
-        space.set(_co, {PHER, std::max(1100.-_steps, space.get(_co).redIntensity), space.get(_co).blueIntensity});
+        space.set(_co, {PHER, std::max((double)maxSteps-_steps, space.get(_co).redIntensity), space.get(_co).blueIntensity});
     } else if(_hasFood && space.get(_co).state == PHER){
-        //_steps = std::min(_steps * 1., 700-space.get(_co).blueIntensity);
-        space.set(_co, {PHER, space.get(_co).redIntensity, std::max(1100.-_steps, space.get(_co).blueIntensity)});
+        space.set(_co, {PHER, space.get(_co).redIntensity, std::max((double)maxSteps-_steps, space.get(_co).blueIntensity)});
     }
     if(_dir == UP) _co.apply({0, -1});
     else if(_dir == DOWN) _co.apply({0, 1});

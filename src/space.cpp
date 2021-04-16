@@ -46,8 +46,12 @@ Coords Grid::getDimensions() const {
     return {W, H};
 }
 
+bool Grid::inside(Coords c) const {
+    return 0 <= c.x && 0 <= c.y && c.x < W && c.y < H;
+}
+
 bool Grid::contains(Coords c) const {
-    return 0 <= c.x && c.x < W && 0 <= c.y && c.y < H && get(c).state != WALL;
+    return inside(c) && get(c).state != WALL;
 }
 
 double Grid::attraction(Coords Tl, Coords Br, bool hasFood, double beta){

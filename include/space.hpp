@@ -3,8 +3,6 @@
 
 #include <vector>
 
-const int sense = 10;
-
 enum Direction {
     UP,
     DOWN,
@@ -43,6 +41,7 @@ public:
     void increaseScore();
     int getScore() const;
     Coords getDimensions() const;
+    bool inside(Coords c) const;
     bool contains(Coords c) const;
     double attraction(Coords tl, Coords br, bool hasFood, double beta);
     Coords _home;
