@@ -7,4 +7,5 @@ if it reaches its goal the score will increment and she will start looking for f
 Clicking somewhere on the screen will put walls there, ants can't traverse walls. Finally pheromones evaporate over time
 # launching the simulation
 You should have 'make' installed. Go to the project's folder in a terminal and enter "make all" then launch the simulation by typing "./bin/Ants &".
-Note that this has been made for Linux, if you want to run it on another OS be sure to modify the makefile and lib files accordingly.
+Note that this has been made for Linux, if you want to run it on another OS be sure to modify the makefile and lib files accordingly. If something goes wrong 
+try typing "make mrproper" before "make all".
